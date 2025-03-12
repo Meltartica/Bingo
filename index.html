@@ -12,43 +12,58 @@
             background-color: green;
             color: white;
             text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
         }
         table {
             border-collapse: collapse;
-            width: 50%;
+            width: 90vmin;
+            height: 80vmin;
             margin: 0 auto;
             background-color: green;
-            aspect-ratio: 5 / 3;
         }
         td {
             border: 1px solid black;
             width: 20%;
-            height: 100px;
+            height: 10.8vmin;
             text-align: center;
             vertical-align: middle;
-            font-size: 60px;
+            font-size: 5vmin;
             font-weight: bold;
             color: black;
             background-color: white;
+            cursor: pointer;
         }
         .free-space {
             background-color: green;
             color: white;
-            font-size:  24px;
+            font-size: 4vmin;
+            pointer-events: none;
+            touch-action: none;
+        }
+        .marked {
+            background-color: red;
+            color: white;
         }
         h1 {
             font-family: 'Balthazar';
             text-align: center;
-            font-size: 124px;
+            font-size: 15vmin;
             line-height: 1;
-            margin: 0px;
-            letter-spacing: 12px;
-            margin-right: -12px;
+            margin: 0;
+            letter-spacing: 1vmin;
+            margin-right: -1vmin;
         }
         button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 20px;
+            margin-top: 2vmin;
+            padding: 1vmin 2vmin;
+            font-size: 4vmin;
             font-family: 'Oswald', sans-serif;
             background-color: white;
             color: green;
@@ -57,6 +72,35 @@
         }
         button:hover {
             background-color: #f0f0f0;
+        }
+        .bingo-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            color: green;
+            padding: 4vmin;
+            font-size: 8vmin;
+            font-weight: bold;
+            border: 1vmin solid green;
+            box-shadow: 0 0 2vmin rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: celebrate 2s infinite;
+        }
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+            z-index: 999; /* Ensure it's below the popup but above other elements */
         }
     </style>
 </head>
@@ -89,6 +133,8 @@
             let numbers = [];
 
             const storedNumbers = getCookie('bingoCardNumbers');
+            const markedCells = JSON.parse(getCookie('markedCells') || '[]');
+
             if (storedNumbers) {
                 numbers = JSON.parse(storedNumbers);
             } else {
@@ -109,17 +155,92 @@
                     } else {
                         td.textContent = numbers[index++];
                     }
+
+                    // Check if the cell is marked and apply the class
+                    const cellId = `${row}-${col}`;
+                    if (markedCells.includes(cellId)) {
+                        td.classList.add('marked');
+                    }
+
+                    // Add click event listener to toggle cell colors and update the cookie
+                    td.addEventListener('click', () => {
+                        td.classList.toggle('marked');
+                        const cellId = `${row}-${col}`;
+                        let markedCells = JSON.parse(getCookie('markedCells') || '[]');
+                        if (td.classList.contains('marked')) {
+                            if (!markedCells.includes(cellId)) {
+                                markedCells.push(cellId);
+                            }
+                        } else {
+                            markedCells = markedCells.filter(id => id !== cellId);
+                        }
+                        setCookie('markedCells', JSON.stringify(markedCells), 1);
+
+                        // Check for Bingo after each click
+                        checkForBingo();
+                    });
+
                     tr.appendChild(td);
                 }
                 table.appendChild(tr);
             }
         }
 
+        function checkForBingo() {
+            const cells = document.querySelectorAll('#bingo-card td:not(.free-space)');
+            const allMarked = Array.from(cells).every(cell => cell.classList.contains('marked'));
+
+            if (allMarked) {
+                showBingoPopup();
+            }
+        }
+
+        function showBingoPopup() {
+            // Create the popup
+            const popup = document.createElement('div');
+            popup.className = 'bingo-popup';
+            popup.textContent = 'BINGO!';
+            document.body.appendChild(popup);
+
+            // Create an overlay to block interaction with other elements
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            document.body.appendChild(overlay);
+
+            // Remove the popup and overlay after 30 seconds
+            setTimeout(() => {
+                popup.remove();
+                overlay.remove();
+            }, 30000);
+
+            // Remove the popup and overlay after 30 seconds
+            const timeoutId = setTimeout(() => {
+                popup.remove();
+                overlay.remove();
+            }, 30000);
+
+            // Remove the popup and overlay if the user clicks or presses on the popup
+            popup.addEventListener('click', () => {
+                clearTimeout(timeoutId); // Clear the 30-second timeout
+                popup.remove();
+                overlay.remove();
+            });
+
+            popup.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    clearTimeout(timeoutId); // Clear the 30-second timeout
+                    popup.remove();
+                    overlay.remove();
+                }
+            });
+        }
+
         function generateNewCard() {
             const confirmation = confirm("Are you sure you want to generate a new Bingo card? This will reset the current card.");
             if (confirmation) {
-                clearCookie('bingoCardNumbers'); // Clear the existing cookie
-                generateBingoCard(); // Generate a new card
+                clearCookie('bingoCardNumbers');
+                clearCookie('markedCells');
+                generateBingoCard();
             }
         }
 
@@ -128,6 +249,13 @@
 
         // Add event listener to the button
         document.getElementById('new-card-button').addEventListener('click', generateNewCard);
+
+        // Adjust the table size on window resize
+        window.addEventListener('resize', () => {
+            const table = document.getElementById('bingo-card');
+            table.style.width = '90vmin';
+            table.style.height = '54vmin';
+        });
     </script>
 </body>
 </html>
