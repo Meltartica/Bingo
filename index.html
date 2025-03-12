@@ -60,8 +60,12 @@
             letter-spacing: 1vmin;
             margin-right: -1vmin;
         }
-        button {
+        .button-container {
+            display: flex;
+            gap: 2vmin;
             margin-top: 2vmin;
+        }
+        button {
             padding: 1vmin 2vmin;
             font-size: 4vmin;
             font-family: 'Oswald', sans-serif;
@@ -109,7 +113,10 @@
     <table id="bingo-card">
         <!-- Bingo card will be generated here -->
     </table>
-    <button id="new-card-button">Generate New Card</button>
+    <div class="button-container">
+        <button id="new-card-button">Generate New Card</button>
+        <button id="reset-colors-button">Reset Colors</button>
+    </div>
     <script>
         function getCookie(name) {
             const value = `; ${document.cookie}`;
@@ -127,23 +134,41 @@
             document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
         }
 
+        function getRandomNumbers(min, max, count) {
+            const numbers = [];
+            while (numbers.length < count) {
+                const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+                if (!numbers.includes(randomNumber)) {
+                    numbers.push(randomNumber);
+                }
+            }
+            return numbers;
+        }
+
         function generateBingoCard() {
             const table = document.getElementById('bingo-card');
             table.innerHTML = ''; // Clear the table
-            let numbers = [];
 
+            // Check if a card already exists in cookies
             const storedNumbers = getCookie('bingoCardNumbers');
             const markedCells = JSON.parse(getCookie('markedCells') || '[]');
 
+            let columns;
             if (storedNumbers) {
-                numbers = JSON.parse(storedNumbers);
+                // Use the stored numbers
+                columns = JSON.parse(storedNumbers);
             } else {
-                numbers = Array.from({ length: 99 }, (_, i) => i + 1);
-                numbers = numbers.sort(() => 0.5 - Math.random());
-                setCookie('bingoCardNumbers', JSON.stringify(numbers), 1);
+                // Generate new numbers
+                columns = {
+                    B: getRandomNumbers(1, 15, 5),
+                    I: getRandomNumbers(16, 30, 5),
+                    N: getRandomNumbers(31, 45, 5),
+                    G: getRandomNumbers(46, 60, 5),
+                    O: getRandomNumbers(61, 75, 5)
+                };
+                // Store the numbers in a cookie
+                setCookie('bingoCardNumbers', JSON.stringify(columns), 1);
             }
-
-            let index = 0;
 
             for (let row = 0; row < 5; row++) {
                 const tr = document.createElement('tr');
@@ -153,7 +178,8 @@
                         td.textContent = 'FREE';
                         td.classList.add('free-space');
                     } else {
-                        td.textContent = numbers[index++];
+                        const columnKey = Object.keys(columns)[col];
+                        td.textContent = columns[columnKey][row];
                     }
 
                     // Check if the cell is marked and apply the class
@@ -213,22 +239,14 @@
                 overlay.remove();
             }, 30000);
 
-            // Remove the popup and overlay after 30 seconds
-            const timeoutId = setTimeout(() => {
-                popup.remove();
-                overlay.remove();
-            }, 30000);
-
             // Remove the popup and overlay if the user clicks or presses on the popup
             popup.addEventListener('click', () => {
-                clearTimeout(timeoutId); // Clear the 30-second timeout
                 popup.remove();
                 overlay.remove();
             });
 
             popup.addEventListener('keypress', (event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
-                    clearTimeout(timeoutId); // Clear the 30-second timeout
                     popup.remove();
                     overlay.remove();
                 }
@@ -255,11 +273,23 @@
             }
         }
 
-        // Generate the initial Bingo card
+        function resetColors() {
+            const confirmation = confirm("Are you sure you want to reset all colors?");
+            if (confirmation) {
+                const cells = document.querySelectorAll('#bingo-card td');
+                cells.forEach(cell => {
+                    cell.classList.remove('marked');
+                });
+                clearCookie('markedCells');
+            }
+        }
+
+        // Generate the initial Bingo card on page load
         generateBingoCard();
 
-        // Add event listener to the button
+        // Add event listener to the buttons
         document.getElementById('new-card-button').addEventListener('click', generateNewCard);
+        document.getElementById('reset-colors-button').addEventListener('click', resetColors);
 
         // Adjust the table size on window resize
         window.addEventListener('resize', () => {
