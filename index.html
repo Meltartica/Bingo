@@ -236,10 +236,21 @@
         }
 
         function generateNewCard() {
+            const lastGeneratedTime = getCookie('lastGeneratedTime');
+            const currentTime = new Date().getTime();
+
+            // Check if 10 minutes have passed since the last generation
+            if (lastGeneratedTime && (currentTime - parseInt(lastGeneratedTime)) < 10 * 60 * 1000) {
+                const remainingTime = Math.ceil((10 * 60 * 1000 - (currentTime - parseInt(lastGeneratedTime))) / 1000);
+                alert(`Please wait ${remainingTime} seconds before generating a new card.`);
+                return;
+            }
+
             const confirmation = confirm("Are you sure you want to generate a new Bingo card? This will reset the current card.");
             if (confirmation) {
                 clearCookie('bingoCardNumbers');
                 clearCookie('markedCells');
+                setCookie('lastGeneratedTime', currentTime.toString(), 1); // Store the current time as a cookie
                 generateBingoCard();
             }
         }
