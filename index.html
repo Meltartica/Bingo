@@ -31,7 +31,7 @@
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
             --radius: 10px;
-            --radius-lg: 16px;
+            --radius-lg: calc(var(--radius) + 0px);
             --transition: all 0.2s cubic-bezier(.4,0,.2,1);
         }
         html {
@@ -86,8 +86,7 @@
             height: 100%;
             border-collapse: collapse;
             background: var(--surface);
-            border-radius: var(--table-radius, 10px);
-            --table-radius: 10px;
+            border-radius: var(--radius);
             overflow: hidden;
             box-shadow: var(--shadow-sm);
         }
@@ -105,7 +104,9 @@
             font-family: 'Inter', sans-serif;
         }
         table#bingo-card td {
-            border: 1.5px solid var(--border);
+            /*border: 1.5px solid var(--border);*/
+            box-shadow: 0 0 0 1px var(--border) inset;
+            padding: 1.5px;
             width: 20%;
             max-height: 80px;
             min-height: 48px;
@@ -122,17 +123,11 @@
         }
         
         /* Add border radius to table edges */
-        table#bingo-card tbody tr:first-child td:first-child {
-            border-top-left-radius: var(--table-radius, 24px);
-        }
-        table#bingo-card tbody tr:first-child td:last-child {
-            border-top-right-radius: var(--table-radius, 24px);
-        }
         table#bingo-card tbody tr:last-child td:first-child {
-            border-bottom-left-radius: var(--table-radius, 24px);
+            border-bottom-left-radius: var(--radius-lg, 24px);
         }
         table#bingo-card tbody tr:last-child td:last-child {
-            border-bottom-right-radius: var(--table-radius, 24px);
+            border-bottom-right-radius: var(--radius-lg, 24px);
         }
         table#bingo-card td.free-space {
             background: var(--primary-color);
@@ -148,7 +143,6 @@
         table#bingo-card td.marked {
             background: var(--primary-color);
             color: var(--text-primary);
-            box-shadow: 0 0 0 2px var(--primary-color) inset;
             transition: var(--transition);
         }
         table#bingo-card td:hover {
