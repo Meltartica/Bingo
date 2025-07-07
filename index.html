@@ -4,118 +4,252 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bingo Card</title>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Balthazar&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Oswald', sans-serif;
-            background-color: green;
-            color: white;
-            text-align: center;
+        /* Reset and Base Styles */
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --primary-color: #458230;
+            --primary-hover: #2f5a21;
+            --secondary-color: #334155;
+            --success-color: #458230;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --background: #0a0a0a;
+            --surface: #18181b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #a1a1aa;
+            --border: #27272a;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.2s cubic-bezier(.4,0,.2,1);
+        }
+        html {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        body {
+            min-height: 100vh;
+            background: var(--background);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            height: 100svh;
+            padding: 2rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+        header {
+            width: 100%;
+            text-align: center;
+        }
+        .bingo-title {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(2.5rem, 10vw, 4.5rem);
+            color: var(--primary-color);
+            letter-spacing: 0.2em;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 8px #0006;
+        }
+        /* Bingo Card Table */
+        .bingo-card-wrapper {
+            width: 100%;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
             padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
         }
-        table {
+        table#bingo-card {
             border-collapse: collapse;
-            width: 90vmin;
-            height: 80vmin;
-            margin: 0 auto;
-            background-color: green;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1 / 1.2;
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
-        td {
-            border: 1px solid black;
+        table#bingo-card th {
+            border: none;
             width: 20%;
-            height: 10.8vmin;
             text-align: center;
             vertical-align: middle;
-            font-size: 5vmin;
-            font-weight: bold;
-            color: black;
-            background-color: white;
-            cursor: pointer;
+            font-size: clamp(2.2rem, 8vw, 3.2rem); /* Bigger font */
+            font-weight: 900; /* Bolder */
+            color: var(--primary-color);
+            background: var(--surface); /* Slightly darker for distinction */
+            text-shadow: 0 2px 8px #0003;
+            font-family: 'Inter', sans-serif;
         }
-        .free-space {
-            background-color: green;
-            color: white;
-            font-size: 4vmin;
+        table#bingo-card td {
+            border: 1.5px solid var(--border);
+            width: 20%;
+            max-height: 80px;
+            min-height: 48px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: clamp(1.2rem, 5vw, 2.2rem);
+            font-weight: 700;
+            color: var(--primary-color);
+            background: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+        }
+        table#bingo-card td.free-space {
+            background: var(--primary-color);
+            color: var(--text-primary);
+            font-size: clamp(1rem, 4vw, 1.5rem);
             pointer-events: none;
             touch-action: none;
+            font-weight: 600;
+            letter-spacing: 0.1em;
         }
-        .marked {
-            background-color: red;
-            color: white;
+        table#bingo-card td.marked {
+            background: var(--error-color);
+            color: #fff;
+            box-shadow: 0 0 0 2px var(--error-color) inset;
+            transition: var(--transition);
         }
-        h1 {
-            font-family: 'Balthazar';
-            text-align: center;
-            font-size: 15vmin;
-            line-height: 1;
-            margin: 0;
-            letter-spacing: 1vmin;
-            margin-right: -1vmin;
-        }
+        /* Buttons */
         .button-container {
             display: flex;
-            gap: 2vmin;
-            margin-top: 2vmin;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+            width: 100%;
         }
         button {
-            padding: 1vmin 2vmin;
-            font-size: 4vmin;
-            font-family: 'Oswald', sans-serif;
-            background-color: white;
-            color: green;
+            padding: 0.8rem 1.5rem;
+            font-size: 1.1rem;
+            font-family: inherit;
+            background: var(--primary-color);
+            color: #fff;
             border: none;
+            border-radius: var(--radius);
             cursor: pointer;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
         }
         button:hover {
-            background-color: #f0f0f0;
+            background: var(--primary-hover);
+            transform: translateY(-2px);
         }
+        /* Popup and Overlay */
         .bingo-popup {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: white;
-            color: green;
-            padding: 4vmin;
-            font-size: 8vmin;
+            background: var(--surface);
+            color: var(--primary-color);
+            padding: 2.5rem 2rem;
+            font-size: clamp(2rem, 8vw, 4rem);
             font-weight: bold;
-            border: 1vmin solid green;
-            box-shadow: 0 0 2vmin rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            border: 4px solid var(--primary-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 1001;
             animation: celebrate 2s infinite;
+            text-align: center;
         }
         @keyframes celebrate {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.2); }
-            100% { transform: translate(-50%, -50%) scale(1); }
+            0% { transform: translate(-50%, -50%) scale(1);}
+            50% { transform: translate(-50%, -50%) scale(1.08);}
+            100% { transform: translate(-50%, -50%) scale(1);}
         }
         .overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-            z-index: 999; /* Ensure it's below the popup but above other elements */
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .bingo-card-wrapper {
+                padding: 0;
+            }
+            table#bingo-card {
+                max-width: 100vw;
+            }
+            table#bingo-card td {
+                font-size: clamp(1.5rem, 8vw, 2.2rem); /* Increased font size */
+                min-height: 36px;
+            }
+            .bingo-popup {
+                padding: 1.2rem 0.5rem;
+                font-size: clamp(1.5rem, 8vw, 2.5rem);
+            }
+            .button-container {
+                flex-direction: column;
+                gap: 0.7rem;
+            }
+        }
+        @media (max-width: 400px) {
+            .bingo-title {
+                font-size: 2rem;
+            }
+            .bingo-popup {
+                font-size: 1.2rem;
+            }
+        }
+        /* Hide scrollbars on mobile */
+        html, body {
+            overflow-x: hidden;
         }
     </style>
 </head>
 <body>
-    <h1>BINGO</h1>
-    <table id="bingo-card">
-        <!-- Bingo card will be generated here -->
-    </table>
-    <div class="button-container">
-        <button id="new-card-button">Generate New Card</button>
-        <button id="reset-colors-button">Reset Colors</button>
+    <div class="container">
+        <header>
+            <img src="ACCESS_LOGO.png" alt="Access Logo" style="max-width: 110px; width: 38%; height: auto; display: block; margin: 0 auto 1rem auto;">
+        </header>
+        <main class="bingo-card-wrapper">
+            <table id="bingo-card">
+                <thead>
+                    <tr>
+                        <th>B</th>
+                        <th>I</th>
+                        <th>N</th>
+                        <th>G</th>
+                        <th>O</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Bingo card will be generated here -->
+                </tbody>
+            </table>
+        </main>
+        <div class="button-container">
+            <button id="new-card-button">Generate New Card</button>
+            <button id="reset-colors-button">Reset Colors</button>
+        </div>
     </div>
     <script>
         function getCookie(name) {
@@ -147,7 +281,9 @@
 
         function generateBingoCard() {
             const table = document.getElementById('bingo-card');
-            table.innerHTML = ''; // Clear the table
+            // Only clear tbody, not thead
+            const tbody = table.querySelector('tbody');
+            tbody.innerHTML = ''; // Clear only the body
 
             // Check if a card already exists in cookies
             const storedNumbers = getCookie('bingoCardNumbers');
@@ -208,7 +344,7 @@
 
                     tr.appendChild(td);
                 }
-                table.appendChild(tr);
+                tbody.appendChild(tr);
             }
         }
 
@@ -290,13 +426,6 @@
         // Add event listener to the buttons
         document.getElementById('new-card-button').addEventListener('click', generateNewCard);
         document.getElementById('reset-colors-button').addEventListener('click', resetColors);
-
-        // Adjust the table size on window resize
-        window.addEventListener('resize', () => {
-            const table = document.getElementById('bingo-card');
-            table.style.width = '90vmin';
-            table.style.height = '54vmin';
-        });
     </script>
 </body>
 </html>
