@@ -30,7 +30,7 @@
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
-            --radius: 12px;
+            --radius: 10px;
             --radius-lg: 16px;
             --transition: all 0.2s cubic-bezier(.4,0,.2,1);
         }
@@ -42,6 +42,7 @@
         }
         body {
             min-height: 100vh;
+            min-height: 100svh;
             background: var(--background);
             color: var(--text-primary);
             display: flex;
@@ -50,8 +51,6 @@
             justify-content: flex-start;
         }
         .container {
-            width: 100%;
-            max-width: 480px;
             min-height: 100vh;
             min-height: 100svh;
             padding: 2rem 0;
@@ -74,19 +73,18 @@
         }
         /* Bingo Card Table */
         .bingo-card-wrapper {
-            width: 100%;
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
+            width: auto;
+            height: 60vh;
+            aspect-ratio: 1 / 1.2;
             padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
         table#bingo-card {
-            border-collapse: collapse;
             width: 100%;
-            aspect-ratio: 1 / 1.2;
+            height: 100%;
+            border-collapse: collapse;
             background: var(--surface);
             border-radius: var(--radius);
             overflow: hidden;
@@ -97,7 +95,7 @@
             width: 20%;
             text-align: center;
             vertical-align: middle;
-            font-size: clamp(2.2rem, 8vw, 3.2rem); /* Bigger font */
+            font-size: 5vh;
             font-weight: 900; /* Bolder */
             color: var(--primary-color);
             background: var(--surface); /* Slightly darker for distinction */
@@ -111,7 +109,7 @@
             min-height: 48px;
             text-align: center;
             vertical-align: middle;
-            font-size: 2.2rem;
+            font-size: 5vh;
             font-weight: 700;
             color: var(--primary-color);
             background: var(--text-primary);
@@ -122,7 +120,7 @@
         table#bingo-card td.free-space {
             background: var(--primary-color);
             color: var(--text-primary);
-            font-size: 1.5rem;
+            font-size: 3vh;
             pointer-events: none;
             touch-action: none;
             font-weight: 600;
@@ -135,20 +133,20 @@
             box-shadow: 0 0 0 2px var(--primary-color) inset;
             transition: var(--transition);
         }
-        table#bingo-card td.marked:hover {
+        table#bingo-card td:hover {
             box-shadow: 0 0 0 2px var(--primary-hover) inset;
         }
         /* Buttons */
         .button-container {
             display: flex;
             gap: 1rem;
-            margin-top: 1.5rem;
             justify-content: center;
             width: 100%;
         }
         button {
-            padding: 0.8rem 1.5rem;
-            font-size: 1.1rem;
+            flex: 1 1 auto;
+            padding: 0.7rem 1.4rem;
+            font-size: 1rem;
             font-family: inherit;
             background: var(--primary-color);
             color: #fff;
@@ -171,8 +169,8 @@
             transform: translate(-50%, -50%);
             background: var(--surface);
             color: var(--primary-color);
-            padding: 2.5rem 2rem;
-            font-size: clamp(2rem, 8vw, 4rem);
+            padding: 5vh 4vh;
+            font-size: 6vh;
             font-weight: bold;
             border: 4px solid var(--primary-color);
             border-radius: var(--radius-lg);
@@ -193,33 +191,28 @@
             z-index: 1000;
         }
         /* Responsive Design */
-        @media (max-width: 600px) {
+        @media (max-width: 50vh) {
             .bingo-card-wrapper {
-                padding: 0;
+                width: 100vw;
+                height: auto;
             }
-            table#bingo-card {
-                max-width: 100vw;
+            table#bingo-card th {
+                font-size: 10vw;
             }
             table#bingo-card td {
-                min-height: 36px;
+                font-size: 10vw;
+            }
+            table#bingo-card td.free-space {
+                font-size: 6vw;
             }
             .bingo-popup {
-                padding: 1.2rem 0.5rem;
-                font-size: clamp(1.5rem, 8vw, 2.5rem);
+                padding: 10vw 8vw;
+                font-size: 12vw;
             }
             .button-container {
                 flex-direction: column;
                 gap: 0.7rem;
             }
-        }
-        @media (max-width: 400px) {
-            .bingo-popup {
-                font-size: 1.2rem;
-            }
-        }
-        /* Hide scrollbars on mobile */
-        html, body {
-            overflow-x: hidden;
         }
     </style>
 </head>
