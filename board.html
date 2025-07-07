@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo Number Selector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #458230;
+            --primary-hover: #2f5a21;
+            --secondary-color: #334155;
+            --background: #0a0a0a;
+            --surface: #18181b;
+            --text-primary: #f1f5f9;
+            --border: #27272a;
+            --radius: 10px;
+            --transition: all 0.2s cubic-bezier(.4,0,.2,1), font-size 0s;
+        }
+        html {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background: var(--background);
+            padding: 0;
+            gap: 0;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 0;
+        }
+        .logo img {
+            max-width: 400px;
+            height: auto;
+        }
+        .title {
+            text-align: center;
+            margin-bottom: 0;
+        }
+        .title h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: center;
+            margin: 0;
+        }
+        .container {
+            margin-top: 1rem;
+            display: flex;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1400px;
+        }
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 2rem;
+            width: 500px;
+            flex-shrink: 0;
+        }
+        .reset-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0;
+        }
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .current-number {
+            font-size: 12rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            background: var(--surface);
+            padding: 3rem 4rem;
+            border-radius: var(--radius);
+            border: 3px solid var(--primary-color);
+            text-align: center;
+            box-shadow: 0 4px 16px #0004;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+        }
+        button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-family: inherit;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+            transition: var(--transition);
+            min-width: 140px;
+        }
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+        .all-numbers {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+            max-height: 60%;
+            overflow-y: auto;
+            width: 100%;
+        }
+        .history-section {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: var(--radius);
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+            width: 100%;
+            max-height: 40%;
+            display: flex;
+            flex-direction: column;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            flex-shrink: 0;
+        }
+        .history-header h3 {
+            color: var(--primary-color);
+            text-align: left;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }
+        .history-number {
+            background: var(--primary-color);
+            color: var(--text-primary);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            min-width: 2rem;
+            text-align: center;
+        }
+        .all-numbers table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        .all-numbers th {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 0.5rem 0.2rem;
+        }
+        .all-numbers td {
+            text-align: center;
+            padding: 0.3rem 0.1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 4px;
+            background: var(--surface);
+            color: var(--text-primary);
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            user-select: none;
+        }
+        .all-numbers td.selected {
+            background: var(--primary-color);
+            color: var(--text-primary);
+        }
+        .all-numbers td.current {
+            background: var(--warning-color, #f59e0b);
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 900;
+            border: 2px solid #fff2;
+            box-shadow: 0 0 8px #f59e0b88;
+        }
+        .all-numbers td:hover {
+            box-shadow: 0 0 0 2px var(--primary-hover) inset;
+        }
+        @media (max-width: 1200px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+                max-height: none;
+            }
+            .left-panel {
+                width: 500px;
+                flex-shrink: 0;
+            }
+            .right-panel {
+                width: 100%;
+            }
+            .all-numbers {
+                max-height: 60vh;
+            }
+        }
+        @media (max-width: 768px) {
+            .container {
+                gap: 1rem;
+            }
+            .left-panel {
+                width: 500px;
+                flex-shrink: 0;
+            }
+            h1 { font-size: 2rem; }
+            .current-number { font-size: 3rem; padding: 1.5rem; }
+            button { font-size: 1rem; padding: 0.8rem 1.5rem; }
+            .all-numbers td { font-size: 0.9rem; padding: 0.2rem 0.1rem; }
+        }
+        .history-header button {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+            transition: var(--transition);
+        }
+        .history-header button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .dialog {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: var(--radius);
+            border: 2px solid var(--primary-color);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        .dialog h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .dialog p {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .dialog input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--background);
+            color: var(--text-primary);
+            font-family: inherit;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .dialog-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .dialog-buttons button {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        .dialog-buttons .cancel {
+            background: var(--secondary-color);
+        }
+        .dialog-buttons .cancel:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="ACCESS WORDMARK_V2.png" alt="ACCESS Logo">
+    </div>
+    <div class="title">
+        <h1>Bingo Number Selector</h1>
+    </div>
+    <div class="container">
+        <div class="left-panel">
+            <div class="current-number" id="current-number">--</div>
+        </div>
+        <div class="right-panel">
+            <div class="all-numbers" id="all-numbers"></div>
+            <div class="history-section">
+                <div class="history-header">
+                    <h3>History</h3>
+                    <button id="reset-game">Reset</button>
+                </div>
+                <div class="history-list">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="dialog-overlay" id="dialog-overlay">
+        <div class="dialog" id="dialog">
+            <h3 id="dialog-title">Confirm Reset</h3>
+            <p id="dialog-message">Are you sure you want to reset all selections?</p>
+            <div class="dialog-buttons">
+                <button id="dialog-confirm">Confirm</button>
+                <button class="cancel" id="dialog-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div class="dialog-overlay" id="password-overlay">
+        <div class="dialog" id="password-dialog">
+            <h3>Enter Password</h3>
+            <input type="password" id="password-input" placeholder="Enter password">
+            <div class="dialog-buttons">
+                <button id="password-confirm">Submit</button>
+                <button class="cancel" id="password-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        class BingoSelector {
+            constructor() {
+                this.allNumbers = Array.from({length: 75}, (_, i) => i + 1);
+                this.selectedNumbers = [];
+                this.currentNumber = null;
+                this.password = 'potato';
+                this.loadSession();
+                this.renderAllNumbers();
+                this.setupEventListeners();
+                this.updateDisplay();
+            }
+            setupEventListeners() {
+                document.getElementById('reset-game').addEventListener('click', () => this.showResetDialog());
+                document.getElementById('all-numbers').addEventListener('click', (e) => {
+                    const td = e.target.closest('td[data-num]');
+                    if (!td) return;
+                    const num = parseInt(td.getAttribute('data-num'));
+                    if (!num) return;
+                    this.selectNumber(num);
+                });
+                // Dialog event listeners
+                document.getElementById('dialog-cancel').addEventListener('click', () => this.hideDialog('dialog-overlay'));
+                document.getElementById('dialog-confirm').addEventListener('click', () => this.confirmReset());
+                document.getElementById('password-cancel').addEventListener('click', () => this.hideDialog('password-overlay'));
+                document.getElementById('password-confirm').addEventListener('click', () => this.checkPassword());
+                document.getElementById('password-input').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.checkPassword();
+                });
+            }
+            showResetDialog() {
+                document.getElementById('dialog-overlay').style.display = 'flex';
+            }
+            hideDialog(overlayId) {
+                document.getElementById(overlayId).style.display = 'none';
+                if (overlayId === 'password-overlay') {
+                    document.getElementById('password-input').value = '';
+                }
+            }
+            confirmReset() {
+                this.hideDialog('dialog-overlay');
+                this.showPasswordDialog();
+            }
+            showPasswordDialog() {
+                document.getElementById('password-overlay').style.display = 'flex';
+                document.getElementById('password-input').focus();
+            }
+            checkPassword() {
+                const input = document.getElementById('password-input');
+                if (input.value === this.password) {
+                    this.hideDialog('password-overlay');
+                    this.resetGame();
+                } else {
+                    alert('Incorrect password!');
+                    input.value = '';
+                    input.focus();
+                }
+            }
+            saveSession() {
+                const sessionData = {
+                    selectedNumbers: this.selectedNumbers,
+                    currentNumber: this.currentNumber,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('bingoSession', JSON.stringify(sessionData));
+            }
+            loadSession() {
+                const sessionData = localStorage.getItem('bingoSession');
+                if (sessionData) {
+                    try {
+                        const data = JSON.parse(sessionData);
+                        // Check if session is less than 24 hours old
+                        if (Date.now() - data.timestamp < 24 * 60 * 60 * 1000) {
+                            this.selectedNumbers = data.selectedNumbers || [];
+                            this.currentNumber = data.currentNumber || null;
+                        }
+                    } catch (e) {
+                        console.log('Failed to load session');
+                    }
+                }
+            }
+            selectNumber(num) {
+                if (!this.selectedNumbers.includes(num)) {
+                    this.selectedNumbers.push(num);
+                }
+                this.currentNumber = num;
+                this.updateDisplay();
+                this.saveSession();
+            }
+            updateDisplay() {
+                document.getElementById('current-number').textContent = this.currentNumber ? this.formatBingo(this.currentNumber) : '--';
+                this.updateAllNumbersGrid();
+                this.updateHistory();
+            }
+            updateHistory() {
+                const historyList = document.querySelector('.history-list');
+                historyList.innerHTML = '';
+                this.selectedNumbers.forEach(num => {
+                    const el = document.createElement('span');
+                    el.className = 'history-number';
+                    el.textContent = this.formatBingo(num);
+                    historyList.appendChild(el);
+                });
+            }
+            renderAllNumbers() {
+                const container = document.getElementById('all-numbers');
+                const rows = [[], [], [], [], []];
+                // B: 1-15, I: 16-30, N: 31-45, G: 46-60, O: 61-75
+                for (let i = 0; i < 75; i++) {
+                    rows[Math.floor(i / 15)].push(i + 1);
+                }
+                let html = '<table><tbody>';
+                const headers = ['B', 'I', 'N', 'G', 'O'];
+                for (let row = 0; row < 5; row++) {
+                    html += '<tr>';
+                    html += `<th>${headers[row]}</th>`;
+                    for (let col = 0; col < 15; col++) {
+                        const num = rows[row][col];
+                        html += `<td data-num="${num ?? ''}">${num ?? ''}</td>`;
+                    }
+                    html += '</tr>';
+                }
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            }
+            updateAllNumbersGrid() {
+                document.querySelectorAll('.all-numbers td').forEach(td => {
+                    const num = parseInt(td.getAttribute('data-num'));
+                    td.classList.remove('selected', 'current');
+                    if (!num) return;
+                    if (this.selectedNumbers.includes(num)) td.classList.add('selected');
+                    if (this.currentNumber === num) td.classList.add('current');
+                });
+            }
+            formatBingo(num) {
+                if (num >= 1 && num <= 15) return 'B' + num;
+                if (num >= 16 && num <= 30) return 'I' + num;
+                if (num >= 31 && num <= 45) return 'N' + num;
+                if (num >= 46 && num <= 60) return 'G' + num;
+                if (num >= 61 && num <= 75) return 'O' + num;
+                return num;
+            }
+            resetGame() {
+                this.selectedNumbers = [];
+                this.currentNumber = null;
+                this.updateDisplay();
+                this.saveSession();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            new BingoSelector();
+        });
+    </script>
+</body>
+</html>
