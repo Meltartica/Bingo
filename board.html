@@ -37,7 +37,7 @@
         }
         .logo {
             text-align: center;
-            margin-bottom: 0;
+            margin-bottom: -1rem;
         }
         .logo img {
             max-width: 400px;
@@ -56,19 +56,16 @@
         }
         .container {
             margin-top: 1rem;
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
             gap: 2rem;
             width: 100%;
-            max-width: 1400px;
+            max-width: 80vw;
+            position: relative;
         }
         .left-panel {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            gap: 2rem;
-            width: 500px;
-            flex-shrink: 0;
+            grid-column: 1 / 2;
+            position: relative;
         }
         .reset-section {
             display: flex;
@@ -76,19 +73,22 @@
             margin-top: 0;
         }
         .right-panel {
-            flex: 1;
+            grid-column: 2 / 3;
+            flex: 2 2 auto;
             display: flex;
             flex-direction: column;
             align-items: stretch;
-            justify-content: center;
+            justify-content: flex-start;
             gap: 1rem;
         }
         .current-number {
+            position: absolute;
+            inset: 0;
             font-size: 12rem;
             font-weight: 900;
             color: var(--primary-color);
             background: var(--surface);
-            padding: 3rem 4rem;
+            /*padding: 3rem 4rem;*/
             border-radius: var(--radius);
             border: 3px solid var(--primary-color);
             text-align: center;
@@ -127,14 +127,14 @@
             box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
             max-height: 60%;
             overflow-y: auto;
-            width: 100%;
+            /*width: 100%;*/
         }
         .history-section {
             background: var(--surface);
             padding: 1rem;
             border-radius: var(--radius);
             box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
-            width: 100%;
+            /*width: 100%;*/
             max-height: 40%;
             display: flex;
             flex-direction: column;
