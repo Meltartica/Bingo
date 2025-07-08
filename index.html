@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bingo Card</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ACCESS Bingo!</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
@@ -21,7 +21,9 @@
             --secondary-color: #334155;
             --success-color: #458230;
             --error-color: #ef4444;
+            --error-hover: #b91c1c;
             --warning-color: #f59e0b;
+            --warning-hover: #b45309;
             --background: #0a0a0a;
             --surface: #18181b;
             --text-primary: #f1f5f9;
@@ -103,6 +105,16 @@
             text-shadow: 0 2px 8px #0003;
             font-family: 'Inter', sans-serif;
         }
+        table#bingo-card tr.celebrate th {
+            animation: celebrate-bingo 1s infinite linear;
+        }
+        @keyframes celebrate-bingo {
+            0% { background: var(--surface); color: var(--primary-color); }
+            25% { background: var(--error-color); color: var(--text-primary); }
+            50% { background: var(--warning-color); color: var(--text-primary); }
+            75% { background: var(--primary-color); color: var(--text-primary); }
+            100% { background: var(--surface); color: var(--primary-color); }
+        }
         table#bingo-card td {
             /*border: 1.5px solid var(--border);*/
             box-shadow: 0 0 0 1px var(--border) inset;
@@ -121,7 +133,7 @@
             transition: var(--transition);
             user-select: none;
         }
-        
+
         /* Add border radius to table edges */
         table#bingo-card tbody tr:last-child td:first-child {
             border-bottom-left-radius: var(--radius-lg, 24px);
@@ -169,16 +181,33 @@
             box-shadow: var(--shadow-sm);
             transition: var(--transition);
         }
-        button:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
+        /* Error and Warning Hover Styles */
+        @media(hover: hover) and (pointer: fine) {
+            button:hover {
+                background: var(--primary-hover);
+                transform: translateY(-2px);
+            }
+            .error-hover:hover {
+                background: var(--error-hover);
+            }
+            .warning-hover:hover {
+                background: var(--warning-hover);
+            }
+        }
+        button:active {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
         }
         /* Popup and Overlay */
         .bingo-popup {
+            --translate: translate(-50%, -50%);
+            --transition-duration: 0.5s;
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: var(--translate) scale(0);
+            opacity: 0;
+            pointer-events: none;
             background: var(--surface);
             color: var(--primary-color);
             padding: 5vh 4vh;
@@ -187,20 +216,42 @@
             border: 4px solid var(--primary-color);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
-            z-index: 1001;
+            z-index: 1002;
+            display: block;
+            transition: transform var(--transition-duration) cubic-bezier(.4,0,.2,1), opacity var(--transition-duration) cubic-bezier(.4,0,.2,1);
+        }
+        .bingo-popup.show {
+            transform: var(--translate) scale(1);
+            opacity: 1;
+            pointer-events: auto;
             animation: celebrate 2s infinite;
+            animation-delay: var(--transition-duration);
+        }
+        .hint {
+            font-size: 2.2vh;
+            margin-top: 2vh;
+            color: var(--text-secondary);
             text-align: center;
+            opacity: 0.8;
         }
         @keyframes celebrate {
-            0% { transform: translate(-50%, -50%) scale(1);}
-            50% { transform: translate(-50%, -50%) scale(1.08);}
-            100% { transform: translate(-50%, -50%) scale(1);}
+            0% { transform: var(--translate) scale(1);}
+            50% { transform: var(--translate) scale(1.08);}
+            100% { transform: var(--translate) scale(1);}
         }
         .overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.5);
             z-index: 1000;
+            display: block;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s cubic-bezier(.4,0,.2,1);
+        }
+        .overlay.show {
+            opacity: 1;
+            pointer-events: auto;
         }
         /* Responsive Design */
         @media (max-width: 52vh) {
@@ -226,6 +277,15 @@
                 gap: 0.7rem;
             }
         }
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1001;
+        }
     </style>
 </head>
 <body>
@@ -236,7 +296,7 @@
         <main class="bingo-card-wrapper">
             <table id="bingo-card">
                 <thead>
-                    <tr>
+                    <tr id="bingo-header">
                         <th>B</th>
                         <th>I</th>
                         <th>N</th>
@@ -250,11 +310,81 @@
             </table>
         </main>
         <div class="button-container">
-            <button id="new-card-button">Generate New Card</button>
-            <button id="reset-colors-button">Reset Colors</button>
+            <button id="new-card-button" class="warning-hover">Generate New</button>
+            <button id="reset-button" class="error-hover">Reset</button>
         </div>
     </div>
+    <!-- Confetti canvas -->
+    <canvas id="confetti-canvas" style="display:none;"></canvas>
+    <!-- Pre-added popup and overlay, hidden by default -->
+    <div id="bingo-popup" class="bingo-popup">BINGO!</div>
+    <div id="bingo-overlay" class="overlay"></div>
     <script>
+        const table = document.getElementById('bingo-card');
+        const tbody = table.querySelector('tbody');
+        const bingoHeader = document.getElementById('bingo-header');
+        const popup = document.getElementById('bingo-popup');
+        const overlay = document.getElementById('bingo-overlay');
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        let confettiCtx, confettiParticles = [], confettiAnimationId = null;
+
+        function startConfetti() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+            confettiCanvas.style.display = 'block';
+            confettiCtx = confettiCanvas.getContext('2d');
+            confettiParticles = [];
+            const colors = ['#ef4444', '#f59e0b', '#458230', '#3b82f6', '#a21caf', '#fff'];
+            for (let i = 0; i < 120; i++) {
+                confettiParticles.push({
+                    x: Math.random() * confettiCanvas.width,
+                    y: Math.random() * -confettiCanvas.height,
+                    r: Math.random() * 6 + 4,
+                    d: Math.random() * 80 + 40,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 10,
+                    tiltAngle: 0,
+                    tiltAngleIncremental: (Math.random() * 0.07) + 0.05
+                });
+            }
+            confettiDraw();
+        }
+
+        function confettiDraw() {
+            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            for (let i = 0; i < confettiParticles.length; i++) {
+                let p = confettiParticles[i];
+                confettiCtx.beginPath();
+                confettiCtx.lineWidth = p.r;
+                confettiCtx.strokeStyle = p.color;
+                confettiCtx.moveTo(p.x + p.tilt + p.r / 3, p.y);
+                confettiCtx.lineTo(p.x + p.tilt, p.y + p.tilt + p.d / 10);
+                confettiCtx.stroke();
+            }
+            updateConfetti();
+            confettiAnimationId = requestAnimationFrame(confettiDraw);
+        }
+
+        function updateConfetti() {
+            for (let i = 0; i < confettiParticles.length; i++) {
+                let p = confettiParticles[i];
+                p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                p.x += Math.sin(0.01 * p.d);
+                p.tiltAngle += p.tiltAngleIncremental;
+                p.tilt = Math.sin(p.tiltAngle) * 15;
+                if (p.y > confettiCanvas.height) {
+                    p.x = Math.random() * confettiCanvas.width;
+                    p.y = -10;
+                }
+            }
+        }
+
+        function stopConfetti() {
+            confettiCanvas.style.display = 'none';
+            if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
+            confettiAnimationId = null;
+        }
+
         function getCookie(name) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
@@ -283,9 +413,6 @@
         }
 
         function generateBingoCard() {
-            const table = document.getElementById('bingo-card');
-            // Only clear tbody, not thead
-            const tbody = table.querySelector('tbody');
             tbody.innerHTML = ''; // Clear only the body
 
             // Check if a card already exists in cookies
@@ -329,6 +456,8 @@
 
                     // Add click event listener to toggle cell colors and update the cookie
                     td.addEventListener('click', () => {
+                        if (td.hasAttribute('disabled')) return;
+
                         td.classList.toggle('marked');
                         const cellId = `${row}-${col}`;
                         let markedCells = JSON.parse(getCookie('markedCells') || '[]');
@@ -342,54 +471,71 @@
                         setCookie('markedCells', JSON.stringify(markedCells), 1);
 
                         // Check for Bingo after each click
-                        checkForBingo();
+                        checkForBingo(true);
                     });
 
                     tr.appendChild(td);
                 }
                 tbody.appendChild(tr);
             }
+
+            checkForBingo(false);
         }
 
-        function checkForBingo() {
+        function checkForBingo(showPopup) {
             const cells = document.querySelectorAll('#bingo-card td:not(.free-space)');
             const allMarked = Array.from(cells).every(cell => cell.classList.contains('marked'));
 
             if (allMarked) {
-                showBingoPopup();
+                cells.forEach(cell => cell.setAttribute('disabled', ''))
+                bingoHeader.classList.add('celebrate');
+                if (showPopup) {
+                    showBingoPopup();
+                }
             }
         }
 
         function showBingoPopup() {
-            // Create the popup
-            const popup = document.createElement('div');
-            popup.className = 'bingo-popup';
-            popup.textContent = 'BINGO!';
-            document.body.appendChild(popup);
+            // Reset popup content and show
+            popup.classList.add('show');
+            overlay.classList.add('show');
+            startConfetti();
 
-            // Create an overlay to block interaction with other elements
-            const overlay = document.createElement('div');
-            overlay.className = 'overlay';
-            document.body.appendChild(overlay);
+            // Add message after 5 seconds
+            const hintTimeout = setTimeout(() => {
+                const hint = document.createElement('div');
+                hint.classList.add('hint');
+                hint.textContent = 'OK';
+                popup.appendChild(hint);
+            }, 5000);
 
             // Remove the popup and overlay after 30 seconds
-            setTimeout(() => {
-                popup.remove();
-                overlay.remove();
-            }, 30000);
+            const autoCloseTimeout = setTimeout(hideBingoPopup, 30000);
+
+            // Handler to hide popup and cleanup
+            function hideBingoPopup() {
+                popup.classList.remove('show');
+                overlay.classList.remove('show');
+                clearTimeout(hintTimeout);
+                clearTimeout(autoCloseTimeout);
+                stopConfetti();
+            }
 
             // Remove the popup and overlay if the user clicks or presses on the popup
-            popup.addEventListener('click', () => {
-                popup.remove();
-                overlay.remove();
-            });
-
-            popup.addEventListener('keypress', (event) => {
+            function closeHandler() {
+                hideBingoPopup();
+                popup.removeEventListener('click', closeHandler);
+                overlay.removeEventListener('click', closeHandler);
+                popup.removeEventListener('keypress', keyHandler);
+            }
+            function keyHandler(event) {
                 if (event.key === 'Enter' || event.key === ' ') {
-                    popup.remove();
-                    overlay.remove();
+                    closeHandler();
                 }
-            });
+            }
+            popup.addEventListener('click', closeHandler);
+            overlay.addEventListener('click', closeHandler);
+            popup.addEventListener('keypress', keyHandler);
         }
 
         function generateNewCard() {
@@ -408,16 +554,19 @@
                 clearCookie('bingoCardNumbers');
                 clearCookie('markedCells');
                 setCookie('lastGeneratedTime', currentTime.toString(), 1); // Store the current time as a cookie
-                generateBingoCard();
+                window.location.reload();
             }
         }
 
         function resetColors() {
-            const confirmation = confirm("Are you sure you want to reset all colors?");
+            const confirmation = confirm("Are you sure you want to reset your card?");
             if (confirmation) {
+                bingoHeader.classList.remove('celebrate');
+
                 const cells = document.querySelectorAll('#bingo-card td');
                 cells.forEach(cell => {
                     cell.classList.remove('marked');
+                    cell.removeAttribute('disabled');
                 });
                 clearCookie('markedCells');
             }
@@ -428,7 +577,7 @@
 
         // Add event listener to the buttons
         document.getElementById('new-card-button').addEventListener('click', generateNewCard);
-        document.getElementById('reset-colors-button').addEventListener('click', resetColors);
+        document.getElementById('reset-button').addEventListener('click', resetColors);
     </script>
 </body>
 </html>
