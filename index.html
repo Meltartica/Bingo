@@ -207,16 +207,17 @@
             left: 50%;
             transform: var(--translate) scale(0);
             opacity: 0;
+            letter-spacing: 0.1em;
+            text-indent: 0.1em;
             pointer-events: none;
             background: var(--surface);
             color: var(--primary-color);
-            padding: 5vh 4vh;
+            padding: 5vh 6vh;
             font-size: 6vh;
             font-weight: bold;
             border: 4px solid var(--primary-color);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
-            z-index: 1002;
             display: block;
             transition: transform var(--transition-duration) cubic-bezier(.4,0,.2,1), opacity var(--transition-duration) cubic-bezier(.4,0,.2,1);
         }
@@ -229,10 +230,23 @@
         }
         .hint {
             font-size: 2.2vh;
-            margin-top: 2vh;
-            color: var(--text-secondary);
+            opacity: 0;
+            color: var(--text-primary);
+            text-shadow: 0 0 black;
             text-align: center;
-            opacity: 0.8;
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem 1rem;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            transition: opacity 0.3s;
+        }
+        .hint.show {
+            opacity: 1;
         }
         @keyframes celebrate {
             0% { transform: var(--translate) scale(1);}
@@ -284,7 +298,7 @@
             width: 100vw;
             height: 100vh;
             pointer-events: none;
-            z-index: 1001;
+            z-index: -1;
         }
     </style>
 </head>
@@ -314,17 +328,20 @@
             <button id="reset-button" class="error-hover">Reset</button>
         </div>
     </div>
-    <!-- Confetti canvas -->
-    <canvas id="confetti-canvas" style="display:none;"></canvas>
     <!-- Pre-added popup and overlay, hidden by default -->
-    <div id="bingo-popup" class="bingo-popup">BINGO!</div>
-    <div id="bingo-overlay" class="overlay"></div>
+    <div id="bingo-overlay" class="overlay">
+        <!-- Confetti canvas -->
+        <canvas id="confetti-canvas" style="display:none;"></canvas>
+        <div id="bingo-popup" class="bingo-popup">BINGO!</div>
+        <p class="hint">Tap to close</p>
+    </div>
     <script>
         const table = document.getElementById('bingo-card');
         const tbody = table.querySelector('tbody');
         const bingoHeader = document.getElementById('bingo-header');
-        const popup = document.getElementById('bingo-popup');
         const overlay = document.getElementById('bingo-overlay');
+        const popup = document.getElementById('bingo-popup');
+        const hint = document.querySelector('.hint');
         const confettiCanvas = document.getElementById('confetti-canvas');
         let confettiCtx, confettiParticles = [], confettiAnimationId = null;
 
@@ -479,7 +496,7 @@
                 tbody.appendChild(tr);
             }
 
-            checkForBingo(false);
+            checkForBingo(true);
         }
 
         function checkForBingo(showPopup) {
@@ -503,10 +520,7 @@
 
             // Add message after 5 seconds
             const hintTimeout = setTimeout(() => {
-                const hint = document.createElement('div');
-                hint.classList.add('hint');
-                hint.textContent = 'OK';
-                popup.appendChild(hint);
+                hint.classList.add('show');
             }, 5000);
 
             // Remove the popup and overlay after 30 seconds
@@ -524,7 +538,6 @@
             // Remove the popup and overlay if the user clicks or presses on the popup
             function closeHandler() {
                 hideBingoPopup();
-                popup.removeEventListener('click', closeHandler);
                 overlay.removeEventListener('click', closeHandler);
                 popup.removeEventListener('keypress', keyHandler);
             }
@@ -533,7 +546,6 @@
                     closeHandler();
                 }
             }
-            popup.addEventListener('click', closeHandler);
             overlay.addEventListener('click', closeHandler);
             popup.addEventListener('keypress', keyHandler);
         }
