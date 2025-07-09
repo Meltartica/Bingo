@@ -19,6 +19,7 @@
             --primary-color: #458230;
             --primary-hover: #2f5a21;
             --secondary-color: #334155;
+            --secondary-hover: #475569;
             --success-color: #458230;
             --error-color: #ef4444;
             --error-hover: #b91c1c;
@@ -33,7 +34,7 @@
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
             --radius: 10px;
-            --radius-lg: calc(var(--radius) + 0px);
+            --radius-sm: 4px;
             --transition: all 0.2s cubic-bezier(.4,0,.2,1), font-size 0s;
         }
         html {
@@ -134,10 +135,10 @@
             user-select: none;
         }
         table#bingo-card tbody tr:last-child td:first-child {
-            border-bottom-left-radius: var(--radius-lg, 24px);
+            border-bottom-left-radius: var(--radius, 24px);
         }
         table#bingo-card tbody tr:last-child td:last-child {
-            border-bottom-right-radius: var(--radius-lg, 24px);
+            border-bottom-right-radius: var(--radius, 24px);
         }
         table#bingo-card td.free-space {
             background: var(--primary-color);
@@ -214,7 +215,7 @@
             font-size: 6vh;
             font-weight: bold;
             border: 4px solid var(--primary-color);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius);
             box-shadow: var(--shadow-lg);
             display: block;
             transition: transform var(--transition-duration) cubic-bezier(.4,0,.2,1), opacity var(--transition-duration) cubic-bezier(.4,0,.2,1);

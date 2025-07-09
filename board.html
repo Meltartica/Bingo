@@ -7,16 +7,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- FontAwesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
             --primary-color: #458230;
             --primary-hover: #2f5a21;
             --secondary-color: #334155;
+            --secondary-hover: #475569;
+            --success-color: #458230;
+            --error-color: #ef4444;
+            --error-hover: #b91c1c;
+            --warning-color: #f59e0b;
+            --warning-hover: #b45309;
             --background: #0a0a0a;
             --surface: #18181b;
             --text-primary: #f1f5f9;
+            --text-secondary: #a1a1aa;
             --border: #27272a;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
             --radius: 10px;
+            --radius-sm: 4px;
             --transition: all 0.2s cubic-bezier(.4,0,.2,1), font-size 0s;
         }
         html {
@@ -32,12 +45,13 @@
             align-items: center;
             justify-content: center;
             background: var(--background);
+            margin: 0;
             padding: 0;
             gap: 0;
         }
         .logo {
             text-align: center;
-            margin-bottom: 0.5rem;
+            margin: -1rem 0;
         }
         .logo img {
             max-width: 300px;
@@ -83,7 +97,7 @@
         }
         .current-number {
             position: relative;
-            font-size: 12rem;
+            font-size: 11rem;
             font-weight: 900;
             color: var(--primary-color);
             background: var(--surface);
@@ -114,11 +128,13 @@
             font-weight: 700;
             box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
             transition: var(--transition);
-            min-width: 140px;
         }
         button:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
+        }
+        button i {
+            margin-right: 0.25rem;
         }
         .all-numbers {
             background: var(--surface);
@@ -163,14 +179,18 @@
             min-height: 0;
         }
         .history-number {
-            background: var(--primary-color);
+            background: var(--secondary-color);
             color: var(--text-primary);
             padding: 0.3rem 0.6rem;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             font-size: 0.9rem;
             font-weight: 600;
             min-width: 2rem;
             text-align: center;
+            transition: var(--transition);
+        }
+        .history-number:hover {
+            background: var(--secondary-hover);
         }
         .all-numbers table {
             width: 100%;
@@ -189,7 +209,7 @@
             padding: 0.3rem 0.1rem;
             font-size: 1rem;
             font-weight: 600;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             background: var(--surface);
             color: var(--text-primary);
             transition: background 0.2s, color 0.2s, box-shadow 0.2s;
@@ -199,6 +219,7 @@
         .all-numbers td.selected {
             background: var(--primary-color);
             color: var(--text-primary);
+            pointer-events: none;
         }
         .all-numbers td.current {
             background: var(--warning-color, #f59e0b);
@@ -207,6 +228,7 @@
             font-weight: 900;
             border: 2px solid #fff2;
             box-shadow: 0 0 8px #f59e0b88;
+            pointer-events: none;
         }
         .all-numbers td:hover {
             box-shadow: 0 0 0 2px var(--primary-hover) inset;
@@ -248,14 +270,14 @@
             background: var(--primary-color);
             color: #fff;
             border: none;
-            border-radius: var(--radius);
+            border-radius: var(--radius-sm);
             cursor: pointer;
             font-weight: 600;
             box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
             transition: var(--transition);
         }
         .history-header button:hover {
-            background: var(--primary-hover);
+            background: var(--error-hover);
             transform: translateY(-1px);
         }
         .dialog-overlay {
@@ -281,6 +303,7 @@
         }
         .dialog h3 {
             color: var(--primary-color);
+            margin-top: 0;
             margin-bottom: 1rem;
             text-align: center;
         }
@@ -293,7 +316,7 @@
             padding: 0.75rem;
             margin-bottom: 1rem;
             border: 1px solid var(--border);
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             background: var(--background);
             color: var(--text-primary);
             font-family: inherit;
@@ -321,7 +344,7 @@
     <div class="container">
         <div class="left-panel">
             <div class="logo">
-                <img src="ACCESS WORDMARK_V2.png" alt="ACCESS Logo">
+                <img src="ACCESS WORDMARK_V2.png" alt="ACCESS Logo" id="generate-random" style="cursor:pointer;">
             </div>
             <div class="title">
                 <h1>Bingo Number Selector</h1>
@@ -333,26 +356,16 @@
             <div class="history-section">
                 <div class="history-header">
                     <h3>History</h3>
-                    <button id="reset-game">Reset</button>
+                    <button id="reset-game"><i class="fa-solid fa-rotate-right"></i> Reset</button>
                 </div>
                 <div class="history-list">
                 </div>
             </div>
         </div>
     </div>
-    <div class="dialog-overlay" id="dialog-overlay">
-        <div class="dialog" id="dialog">
-            <h3 id="dialog-title">Confirm Reset</h3>
-            <p id="dialog-message">Are you sure you want to reset all selections?</p>
-            <div class="dialog-buttons">
-                <button id="dialog-confirm">Confirm</button>
-                <button class="cancel" id="dialog-cancel">Cancel</button>
-            </div>
-        </div>
-    </div>
     <div class="dialog-overlay" id="password-overlay">
         <div class="dialog" id="password-dialog">
-            <h3>Enter Password</h3>
+            <h3>Enter Password to Reset</h3>
             <input type="password" id="password-input" placeholder="Enter password">
             <div class="dialog-buttons">
                 <button id="password-confirm">Submit</button>
@@ -367,13 +380,14 @@
                 this.selectedNumbers = [];
                 this.currentNumber = null;
                 this.password = 'potato';
+                this.isAnimating = false;
                 this.loadSession();
                 this.renderAllNumbers();
                 this.setupEventListeners();
                 this.updateDisplay();
             }
             setupEventListeners() {
-                document.getElementById('reset-game').addEventListener('click', () => this.showResetDialog());
+                document.getElementById('reset-game').addEventListener('click', () => this.showPasswordDialog());
                 document.getElementById('all-numbers').addEventListener('click', (e) => {
                     const td = e.target.closest('td[data-num]');
                     if (!td) return;
@@ -381,31 +395,25 @@
                     if (!num) return;
                     this.selectNumber(num);
                 });
-                // Dialog event listeners
-                document.getElementById('dialog-cancel').addEventListener('click', () => this.hideDialog('dialog-overlay'));
-                document.getElementById('dialog-confirm').addEventListener('click', () => this.confirmReset());
+                document.getElementById('generate-random').addEventListener('click', () => this.generateRandomNumber());
+                // Remove confirm reset dialog event listeners
+                // document.getElementById('dialog-cancel').addEventListener('click', ...);
+                // document.getElementById('dialog-confirm').addEventListener('click', ...);
                 document.getElementById('password-cancel').addEventListener('click', () => this.hideDialog('password-overlay'));
                 document.getElementById('password-confirm').addEventListener('click', () => this.checkPassword());
                 document.getElementById('password-input').addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') this.checkPassword();
                 });
             }
-            showResetDialog() {
-                document.getElementById('dialog-overlay').style.display = 'flex';
+            showPasswordDialog() {
+                document.getElementById('password-overlay').style.display = 'flex';
+                document.getElementById('password-input').focus();
             }
             hideDialog(overlayId) {
                 document.getElementById(overlayId).style.display = 'none';
                 if (overlayId === 'password-overlay') {
                     document.getElementById('password-input').value = '';
                 }
-            }
-            confirmReset() {
-                this.hideDialog('dialog-overlay');
-                this.showPasswordDialog();
-            }
-            showPasswordDialog() {
-                document.getElementById('password-overlay').style.display = 'flex';
-                document.getElementById('password-input').focus();
             }
             checkPassword() {
                 const input = document.getElementById('password-input');
@@ -461,8 +469,23 @@
                     const el = document.createElement('span');
                     el.className = 'history-number';
                     el.textContent = this.formatBingo(num);
+                    el.setAttribute('data-num', num);
+                    el.style.cursor = 'pointer';
+                    el.title = 'Remove from history';
+                    el.addEventListener('click', (e) => {
+                        this.removeFromHistory(num);
+                        e.stopPropagation();
+                    });
                     historyList.appendChild(el);
                 });
+            }
+            removeFromHistory(num) {
+                this.selectedNumbers = this.selectedNumbers.filter(n => n !== num);
+                if (this.currentNumber === num) {
+                    this.currentNumber = null;
+                }
+                this.updateDisplay();
+                this.saveSession();
             }
             renderAllNumbers() {
                 const container = document.getElementById('all-numbers');
@@ -507,6 +530,102 @@
                 this.currentNumber = null;
                 this.updateDisplay();
                 this.saveSession();
+            }
+            generateRandomNumber() {
+                if (this.isAnimating) return;
+                const available = this.allNumbers.filter(n => !this.selectedNumbers.includes(n));
+                if (available.length === 0) {
+                    alert('All numbers have been selected!');
+                    return;
+                }
+                this.isAnimating = true;
+                const letters = ['B', 'I', 'N', 'G', 'O'];
+                const ranges = [
+                    [1, 15],
+                    [16, 30],
+                    [31, 45],
+                    [46, 60],
+                    [61, 75]
+                ];
+                // Pick a random available number and determine its letter/column
+                const rand = available[Math.floor(Math.random() * available.length)];
+                let letterIdx = 0;
+                for (let i = 0; i < ranges.length; i++) {
+                    if (rand >= ranges[i][0] && rand <= ranges[i][1]) {
+                        letterIdx = i;
+                        break;
+                    }
+                }
+                // Animation: cycle letters, then numbers, then show result
+                const currentNumDiv = document.getElementById('current-number');
+                let letterAnimCount = 0;
+                let letterAnimMax = 18; // ~1s at 55ms per frame
+                let letterInterval = setInterval(() => {
+                    const l = letters[Math.floor(Math.random() * letters.length)];
+                    currentNumDiv.textContent = l + '--';
+                    letterAnimCount++;
+                    if (letterAnimCount >= letterAnimMax) {
+                        clearInterval(letterInterval);
+                        // Start number animation for the chosen letter
+                        this.animateNumberInLetter(letterIdx, rand, currentNumDiv);
+                    }
+                }, 55);
+            }
+            animateNumberInLetter(letterIdx, finalNum, currentNumDiv) {
+                const ranges = [
+                    [1, 15],
+                    [16, 30],
+                    [31, 45],
+                    [46, 60],
+                    [61, 75]
+                ];
+                const letters = ['B', 'I', 'N', 'G', 'O'];
+                const [start, end] = ranges[letterIdx];
+                // Only use available numbers in this letter's range
+                const availableInLetter = [];
+                for (let n = start; n <= end; n++) {
+                    if (!this.selectedNumbers.includes(n) || n === finalNum) {
+                        availableInLetter.push(n);
+                    }
+                }
+                let finalNumStr = finalNum.toString().padStart(2, '0');
+                let numDigits = finalNumStr.length;
+                let numAnimCount = 0;
+                let numAnimMax = 12; // frames for each digit
+                let digits = ['', ''];
+                // Animate first digit
+                let firstDigitInterval = setInterval(() => {
+                    digits[0] = Math.floor(Math.random() * 10).toString();
+                    // Remove leading zero for 1-9
+                    let display = digits[0];
+                    if (numDigits === 2) {
+                        display += '-';
+                    }
+                    currentNumDiv.textContent = letters[letterIdx] + display;
+                    numAnimCount++;
+                    if (numAnimCount >= numAnimMax) {
+                        clearInterval(firstDigitInterval);
+                        digits[0] = finalNumStr[0];
+                        // Animate second digit
+                        let secondAnimCount = 0;
+                        let secondDigitInterval = setInterval(() => {
+                            digits[1] = Math.floor(Math.random() * 10).toString();
+                            let display = digits[0] + digits[1];
+                            // Remove leading zero for 1-9
+                            if (numDigits === 2 && display[0] === '0') display = display[1];
+                            currentNumDiv.textContent = letters[letterIdx] + display;
+                            secondAnimCount++;
+                            if (secondAnimCount >= numAnimMax) {
+                                clearInterval(secondDigitInterval);
+                                // Show final result
+                                setTimeout(() => {
+                                    this.selectNumber(finalNum);
+                                    this.isAnimating = false;
+                                }, 200);
+                            }
+                        }, 50);
+                    }
+                }, 50);
             }
         }
         document.addEventListener('DOMContentLoaded', () => {
