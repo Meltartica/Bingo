@@ -574,7 +574,7 @@
                 // Animation: cycle letters, then numbers, then show result
                 const currentNumDiv = document.getElementById('current-number');
                 let letterAnimCount = 0;
-                let letterAnimMax = 18; // ~1s at 55ms per frame
+                let letterAnimMax = 36; // ~2s at 55ms per frame (doubled from 18)
                 let letterInterval = setInterval(() => {
                     const l = letters[Math.floor(Math.random() * letters.length)];
                     currentNumDiv.textContent = l + '--';
@@ -606,7 +606,7 @@
                 let finalNumStr = finalNum.toString().padStart(2, '0');
                 let numDigits = finalNumStr.length;
                 let numAnimCount = 0;
-                let numAnimMax = 12; // frames for each digit
+                let numAnimMax = 24; // frames for each digit (doubled from 12)
                 let digits = ['', ''];
                 // Animate first digit
                 let firstDigitInterval = setInterval(() => {
